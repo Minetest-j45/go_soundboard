@@ -1,63 +1,201 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"os"
-	"os/signal"
+	"path/filepath"
+	"strings"
 
-	"github.com/gordonklaus/portaudio"
+	"github.com/hajimehoshi/go-mp3"
+	"github.com/youpy/go-wav"
+
+	"github.com/gen2brain/malgo"
 )
 
-func recordAudio() []int32 {
-	var out []int32
-
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt, os.Kill)
-
-	in := make([]int32, 64)
-	stream, err := portaudio.OpenDefaultStream(1, 0, 44100, len(in), in)
+func recordAudio() {
+	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
+		fmt.Printf("LOG <%v>\n", message)
+	})
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	defer stream.Close()
+	defer func() {
+		_ = ctx.Uninit()
+		ctx.Free()
+	}()
 
-	if err := stream.Start(); err != nil {
-		panic(err)
+	deviceConfig := malgo.DefaultDeviceConfig(malgo.Duplex)
+	deviceConfig.Capture.Format = malgo.FormatS16
+	deviceConfig.Capture.Channels = 1
+	deviceConfig.Playback.Format = malgo.FormatS16
+	deviceConfig.Playback.Channels = 1
+	deviceConfig.SampleRate = 44100
+	deviceConfig.Alsa.NoMMap = 1
+
+	var playbackSampleCount uint32
+	var capturedSampleCount uint32
+	pCapturedSamples := make([]byte, 0)
+
+	sizeInBytes := uint32(malgo.SampleSizeInBytes(deviceConfig.Capture.Format))
+	onRecvFrames := func(pSample2, pSample []byte, framecount uint32) {
+
+		sampleCount := framecount * deviceConfig.Capture.Channels * sizeInBytes
+
+		newCapturedSampleCount := capturedSampleCount + sampleCount
+
+		pCapturedSamples = append(pCapturedSamples, pSample...)
+
+		capturedSampleCount = newCapturedSampleCount
+
 	}
-	defer stream.Stop()
 
-	for {
-		if err := stream.Read(); err != nil {
-			panic(err)
+	fmt.Println("Recording...")
+	captureCallbacks := malgo.DeviceCallbacks{
+		Data: onRecvFrames,
+	}
+	device, err := malgo.InitDevice(ctx.Context, deviceConfig, captureCallbacks)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	err = device.Start()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Press Enter to stop recording...")
+	fmt.Scanln()
+
+	device.Uninit()
+
+	onSendFrames := func(pSample, nil []byte, framecount uint32) {
+		samplesToRead := framecount * deviceConfig.Playback.Channels * sizeInBytes
+		if samplesToRead > capturedSampleCount-playbackSampleCount {
+			samplesToRead = capturedSampleCount - playbackSampleCount
 		}
 
-		out = append(out, in...)
-		select {
-		case <-sig:
-			return out
-		default:
+		copy(pSample, pCapturedSamples[playbackSampleCount:playbackSampleCount+samplesToRead])
+
+		playbackSampleCount += samplesToRead
+
+		if playbackSampleCount == uint32(len(pCapturedSamples)) {
+			playbackSampleCount = 0
 		}
 	}
+
+	fmt.Println("Playing...")
+	playbackCallbacks := malgo.DeviceCallbacks{
+		Data: onSendFrames,
+	}
+
+	device, err = malgo.InitDevice(ctx.Context, deviceConfig, playbackCallbacks)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	err = device.Start()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Press Enter to quit...")
+	fmt.Scanln()
+
+	device.Uninit()
 }
 
-func playAudio(data []int32) {
-	stream, err := portaudio.OpenDefaultStream(0, 1, 44100, len(data), &data)
+
+
+func playAudio() {
+	if len(os.Args) < 2 {
+		fmt.Println("No input file.")
+		os.Exit(1)
+	}
+
+	file, err := os.Open(os.Args[1])
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	defer stream.Close()
 
-	if err := stream.Start(); err != nil {
-		panic(err)
-	}
-	defer stream.Stop()
+	defer file.Close()
 
-	if err == io.EOF {
-		return
+	var reader io.Reader
+	var channels, sampleRate uint32
+
+	switch strings.ToLower(filepath.Ext(os.Args[1])) {
+	case ".wav":
+		w := wav.NewReader(file)
+		f, err := w.Format()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		reader = w
+		channels = uint32(f.NumChannels)
+		sampleRate = f.SampleRate
+
+	case ".mp3":
+		m, err := mp3.NewDecoder(file)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		reader = m
+		channels = 2
+		sampleRate = uint32(m.SampleRate())
+	default:
+		fmt.Println("Not a valid file.")
+		os.Exit(1)
 	}
+
+	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
+		fmt.Printf("LOG <%v>\n", message)
+	})
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer func() {
+		_ = ctx.Uninit()
+		ctx.Free()
+	}()
+
+	deviceConfig := malgo.DefaultDeviceConfig(malgo.Playback)
+	deviceConfig.Playback.Format = malgo.FormatS16
+	deviceConfig.Playback.Channels = channels
+	deviceConfig.SampleRate = sampleRate
+	deviceConfig.Alsa.NoMMap = 1
+
+	// This is the function that's used for sending more data to the device for playback.
+	onSamples := func(pOutputSample, pInputSamples []byte, framecount uint32) {
+		io.ReadFull(reader, pOutputSample)
 	}
 
-	stream.Write()
+	deviceCallbacks := malgo.DeviceCallbacks{
+		Data: onSamples,
+	}
+	device, err := malgo.InitDevice(ctx.Context, deviceConfig, deviceCallbacks)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer device.Uninit()
+
+	err = device.Start()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println("Press Enter to quit...")
+	fmt.Scanln()
 }
