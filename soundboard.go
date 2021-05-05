@@ -8,13 +8,10 @@ Usage:
 package main
 
 import (
-	"github.com/gordonklaus/portaudio"
+	"github.com/gen2brain/malgo"
 )
 
 func main() {
-	portaudio.Initialize()
-	defer portaudio.Terminate()
-
 	w := helloWindow()
 	w.ShowAndRun()
 }
