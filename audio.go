@@ -112,9 +112,9 @@ func recordAudio() {
 
 
 
-func playAudio() {
-	if len(os.Args) < 2 {
-		fmt.Println("No input file.")
+func playAudio(audioFile string) {
+	if audioFile ==  "" {
+		fmt.Println("HOW is this possible?")
 		os.Exit(1)
 	}
 
@@ -129,7 +129,7 @@ func playAudio() {
 	var reader io.Reader
 	var channels, sampleRate uint32
 
-	switch strings.ToLower(filepath.Ext(os.Args[1])) {
+	switch strings.ToLower(filepath.Ext(audioFile)) {
 	case ".wav":
 		w := wav.NewReader(file)
 		f, err := w.Format()
