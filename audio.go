@@ -110,10 +110,8 @@ func recordAudio() {
 	device.Uninit()
 }
 
-
-
 func playAudio(audioFile string) {
-	if audioFile ==  "" {
+	if audioFile == "" {
 		fmt.Println("HOW is this possible?")
 		os.Exit(1)
 	}

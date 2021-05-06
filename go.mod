@@ -4,5 +4,7 @@ go 1.16
 
 require (
 	fyne.io/fyne/v2 v2.0.3
-	github.com/gordonklaus/portaudio v0.0.0-20200911161147-bb74aa485641
+	github.com/gen2brain/malgo v0.10.29
+	github.com/hajimehoshi/go-mp3 v0.3.2
+	github.com/youpy/go-wav v0.1.0
 )

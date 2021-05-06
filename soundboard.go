@@ -7,10 +7,6 @@ Usage:
 */
 package main
 
-import (
-	"github.com/gen2brain/malgo"
-)
-
 func main() {
 	w := helloWindow()
 	w.ShowAndRun()
