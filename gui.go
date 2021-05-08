@@ -9,7 +9,7 @@ import (
 
 func helloWindow() fyne.Window {
 	a := app.New()
-	w := a.NewWindow("Hello")
+	w := a.NewWindow("Go Soundboard")
 
 	hello := widget.NewLabel("Hello, World!")
 	w.SetContent(container.NewVBox(
