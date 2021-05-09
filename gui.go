@@ -42,6 +42,7 @@ func mainWindow() fyne.Window {
         widget.NewButton("+", func() {
             hello.SetText("Making a new sound")
             s := newSoundWindow(a)
+	    s.ShowAndRun()
             hello.SetText("Hello, World!")
         }),
     ))
