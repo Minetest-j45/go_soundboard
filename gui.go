@@ -23,10 +23,7 @@ func mainWindow() fyne.Window {
 			// playAudio(audio)
 		}),
 		widget.NewButton("+", func() {
-			//hello.SetText("Recording")
-			//make new sound/button newSound()
-			//hello.SetText("Playing")
-			// playAudio(audio)
+			newSoundWindow()
 		}),
 	))
 
@@ -49,12 +46,4 @@ func newSoundWindow() fyne.Window {
 	))
 
 	return w
-}
-
-	content := container.NewVBox(input, widget.NewButton("Save", func() {
-		log.Println("Content was:", input.Text)
-	}))
-
-	myWindow.SetContent(content)
-	myWindow.ShowAndRun()
 }
