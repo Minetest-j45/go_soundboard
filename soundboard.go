@@ -8,6 +8,6 @@ Usage:
 package main
 
 func main() {
-	w := helloWindow()
+	w := mainWindow()
 	w.ShowAndRun()
 }
