@@ -23,7 +23,9 @@ func mainWindow() fyne.Window {
 			// playAudio(audio)
 		}),
 		widget.NewButton("+", func() {
+			hello.SetText("")
 			newSoundWindow()
+			hello.SetText("")
 		}),
 	))
 
