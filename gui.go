@@ -9,44 +9,42 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func newSoundWindow() fyne.Window {
-	a := app.New()
-	w := a.NewWindow("New Sound - Go Soundboard")
+func newSoundWindow(app) {
+    w := app.NewWindow("New Sound - Go Soundboard")
 
-	hello := widget.NewLabel("Hello, World!")
-	input := widget.NewEntry()
-	input.SetPlaceHolder("Enter new sound name here")
-	content := container.NewVBox(input, widget.NewButton("Save", func() {
-		log.Println("Content was:", input.Text)
-	}))
-	w.SetContent(container.NewVBox(
-		hello,
-		content,
-	))
+    hello := widget.NewLabel("Hello, World!")
+    input := widget.NewEntry()
+    input.SetPlaceHolder("Enter new sound name here")
+    content := container.NewVBox(input, widget.NewButton("Save", func() {
+        log.Println("Content was:", input.Text)
+    }))
+    w.SetContent(container.NewVBox(
+        hello,
+        content,
+    ))
 
-	return w
+    return w
 }
 
 func mainWindow() fyne.Window {
-	a := app.New()
-	w := a.NewWindow("Go Soundboard")
+    a := app.New()
+    w := a.NewWindow("Go Soundboard")
 
-	hello := widget.NewLabel("Hello, World!")
-	w.SetContent(container.NewVBox(
-		hello,
-		widget.NewButton("Hi", func() {
-			hello.SetText("Recording")
-			/*audio :=*/ recordAudio()
-			hello.SetText("Playing")
-			// playAudio(audio)
-		}),
-		widget.NewButton("+", func() {
-			hello.SetText("Making a new sound")
-			s := newSoundWindow()
-			s.ShowAndRun()
-			hello.SetText("Hello, World!")
-		}),
-	))
+    hello := widget.NewLabel("Hello, World!")
+    w.SetContent(container.NewVBox(
+        hello,
+        widget.NewButton("Hi", func() {
+            hello.SetText("Recording")
+            /*audio :=*/ recordAudio()
+            hello.SetText("Playing")
+            // playAudio(audio)
+        }),
+        widget.NewButton("+", func() {
+            hello.SetText("Making a new sound")
+            s := newSoundWindow(a)
+            hello.SetText("Hello, World!")
+        }),
+    ))
 
-	return w
+    return w
 }
