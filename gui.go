@@ -9,7 +9,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func newSoundWindow(fyneapp fyne.App) {
+func newSoundWindow(fyneapp fyne.App) fyne.Window {
     s := fyneApp.NewWindow("New Sound - Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
