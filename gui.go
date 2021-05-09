@@ -10,7 +10,7 @@ import (
 )
 
 func newSoundWindow(app) {
-    w := app.NewWindow("New Sound - Go Soundboard")
+    s := app.NewWindow("New Sound - Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
     input := widget.NewEntry()
@@ -18,12 +18,12 @@ func newSoundWindow(app) {
     content := container.NewVBox(input, widget.NewButton("Save", func() {
         log.Println("Content was:", input.Text)
     }))
-    w.SetContent(container.NewVBox(
+    s.SetContent(container.NewVBox(
         hello,
         content,
     ))
 
-    return w
+    return s
 }
 
 func mainWindow() fyne.Window {
