@@ -10,7 +10,7 @@ import (
 )
 
 func newSoundWindow(fyneapp fyne.App) fyne.Window {
-    s := fyneApp.NewWindow("New Sound - Go Soundboard")
+    s := fyneapp.NewWindow("New Sound - Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
     input := widget.NewEntry()
