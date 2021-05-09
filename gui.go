@@ -7,7 +7,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func helloWindow() fyne.Window {
+func mainWindow() fyne.Window {
 	a := app.New()
 	w := a.NewWindow("Go Soundboard")
 
