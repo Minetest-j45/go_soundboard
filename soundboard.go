@@ -10,4 +10,12 @@ package main
 func main() {
 	w := mainWindow()
 	w.ShowAndRun()
+	
+	for {
+		if showNewSoundWindow == true {
+			w := newSoundWindow()
+			w.ShowAndRun()
+			showNewSoundWindow = false
+		}
+	}
 }
