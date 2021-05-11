@@ -108,13 +108,6 @@ func (a *taskApp) makeUI() fyne.CanvasObject {
 
 	/* Create Menu */
 	a.win.SetMainMenu(create_menu(a))
-
-
-	a.tabbar = container.NewAppTabs()
-	a.tabbar.OnChanged = func(item *container.TabItem) {
-	}
-
-	return a.tabbar
 }
 
 
