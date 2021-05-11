@@ -63,9 +63,6 @@ type taskApp struct {
 	win             fyne.Window
 	settings_uri    fyne.URI /* file with settings */
 
-	tabbar   *container.AppTabs
-	f_stored bool // false if changes were made, true after storing
-
 	helpWindow     fyne.Window
 	settingsWindow fyne.Window
 }
