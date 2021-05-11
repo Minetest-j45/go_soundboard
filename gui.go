@@ -9,17 +9,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-var showNewSoundWindow bool = false
-
-func newApp() fyne.App {
-	a := app.New()
-	
-	return a
-}
-
-func newSoundWindow() fyne.Window {
-    a := newApp()
-    s := a.NewWindow("New Sound - Go Soundboard")
+func newSoundWindow(fyneapp fyne.App) fyne.Window {
+    s := fyneapp.NewWindow("New Sound - Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
     input := widget.NewEntry()
@@ -36,7 +27,7 @@ func newSoundWindow() fyne.Window {
 }
 
 func mainWindow() fyne.Window {
-    a := newApp()
+    a := app.New()
     w := a.NewWindow("Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
