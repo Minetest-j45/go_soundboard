@@ -57,14 +57,3 @@ func mainWindow() fyne.Window {
 
     return w
 }
-
-
-func main() {
-	for {
-		if showNewSoundWindow == true {
-			w := newSoundWindow()
-			w.ShowAndRun()
-			showNewSoundWindow = false
-		}
-	}
-}
