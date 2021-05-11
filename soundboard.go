@@ -8,6 +8,8 @@ Usage:
 package main
 
 func main() {
-	w := mainWindow()
+	a := app.New()
+	w := a.NewWindow("Go Soundboard")
+	w.SetContent(taskapp.makeUI())
 	w.ShowAndRun()
 }
