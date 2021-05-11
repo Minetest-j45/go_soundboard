@@ -18,8 +18,8 @@ func main() {
 	for {
 		log.Println(showNewSoundWindow)
 		if showNewSoundWindow == true {
-			w := newSoundWindow()
-			w.ShowAndRun()
+			s := newSoundWindow()
+			s.ShowAndRun()
 			showNewSoundWindow = false
 		}
 	}
