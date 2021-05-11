@@ -52,6 +52,7 @@ package main
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -101,12 +102,65 @@ func create_menu(a *taskApp) *fyne.MainMenu {
 	)
 }
 
+/*****************************************************************************/
+/*                         Create New Tab                                    */
+/*****************************************************************************/
+func create_new_tab(a *taskApp) *container.Scroll {
+	bar_details := widget.NewToolbar(
+		// save task
+		widget.NewToolbarAction(theme.ConfirmIcon(), func() {
+			a.f_stored = false
+			a.SaveDetails()
+		}),
+	)
+
+	a.w_ID = widget.NewLabel("")
+	a.w_modtime = widget.NewLabel("")
+	a.w_name = widget.NewEntry()
+	a.w_description = widget.NewEntry()
+	a.w_sound_file = widget.NewEntry() /
+	details := widget.NewForm(
+		widget.NewFormItem("Name", a.w_name),
+		widget.NewFormItem("Description", a.w_description),
+		widget.NewFormItem("Sound file", a.w_sound_file),
+	)
+
+	a.w_new_done = widget.NewCheck("Done", func(v bool) {})
+
+	box_details := container.NewScroll(container.NewVBox(
+		widget.NewLabel(""),
+		container.NewHBox(
+			//widget.NewLabel ("save: "),
+			bar_details,
+		),
+		container.New(layout.NewCenterLayout(), widget.NewLabel("New")),
+		container.NewHBox(widget.NewLabel("ID:       "), a.w_ID),
+		container.NewHBox(widget.NewLabel("Mod-Time: "), a.w_modtime),
+		details,
+		a.w_details_done,
+	))
+	return box_details
+}
 
 /* =============================================================================================== */
 func (a *taskApp) makeUI() fyne.CanvasObject {
 
 	/* Create Menu */
 	a.win.SetMainMenu(create_menu(a))
+	
+	/* new tab */
+	box_new := create_new_tab(a)
+	
+	a.w_tab_new = container.NewTabItem("New", box_new)
+
+	a.tabbar = container.NewAppTabs()
+	a.tabbar.OnChanged = func(item *container.TabItem) {
+		if item == a.w_tab_new {
+			a.DisplayCurrentTask()
+		}
+	}
+
+	return a.tabbar
 }
 
 
