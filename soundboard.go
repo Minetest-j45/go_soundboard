@@ -7,6 +7,10 @@ Usage:
 */
 package main
 
+import (
+	"fmt"
+)
+
 func main() {
 	w := mainWindow()
 	w.ShowAndRun()
