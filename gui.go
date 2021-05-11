@@ -113,19 +113,9 @@ func (a *taskApp) makeUI() fyne.CanvasObject {
 	/* Create Menu */
 	a.win.SetMainMenu(create_menu(a))
 
-	/* details tab */
-	box_details := create_details_tab(a)
 
-	s = "Tasks"
-
-	/* Tabs */
-	a.w_tab_details = container.NewTabItem("Details", box_details)
-
-	a.tabbar = container.NewAppTabs(a.w_tab_tasks, a.w_tab_details, a.w_tab_filter, a.w_tab_sync)
+	a.tabbar = container.NewAppTabs()
 	a.tabbar.OnChanged = func(item *container.TabItem) {
-		if item == a.w_tab_details {
-			a.DisplayCurrentTask()
-		}
 	}
 
 	return a.tabbar
