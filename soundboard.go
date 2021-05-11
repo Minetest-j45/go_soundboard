@@ -13,6 +13,7 @@ func main() {
 	
 	for {
 		if showNewSoundWindow == true {
+			fmt.Println("showNewSoundWindow = true")
 			w := newSoundWindow()
 			w.ShowAndRun()
 			showNewSoundWindow = false
