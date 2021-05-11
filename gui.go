@@ -11,14 +11,15 @@ import (
 
 var showNewSoundWindow bool = false
 
-func appFunc() fyne.App {
+func newApp() fyne.App {
 	a := app.New()
 	
 	return a
 }
 
-func newSoundWindow(fyneapp fyne.App) fyne.Window {
-    s := fyneapp.NewWindow("New Sound - Go Soundboard")
+func newSoundWindow() fyne.Window {
+    a := newApp()
+    s := a.NewWindow("New Sound - Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
     input := widget.NewEntry()
@@ -35,7 +36,7 @@ func newSoundWindow(fyneapp fyne.App) fyne.Window {
 }
 
 func mainWindow() fyne.Window {
-    a := appFunc()
+    a := newApp()
     w := a.NewWindow("Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
@@ -49,7 +50,7 @@ func mainWindow() fyne.Window {
         }),
         widget.NewButton("+", func() {
             hello.SetText("Making a new sound")
-            newSoundWindow(a)
+            showNewSoundWindow = true
             hello.SetText("Hello, World!")
         }),
     ))
@@ -57,11 +58,13 @@ func mainWindow() fyne.Window {
     return w
 }
 
-/*
+
 func main() {
 	for {
 		if showNewSoundWindow == true {
-			
+			w := newSoundWindow()
+			w.ShowAndRun
+			showNewSoundWindow = false
 		}
 	}
-}*/
+}
