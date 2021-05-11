@@ -99,7 +99,7 @@ func create_menu(a *taskApp) *fyne.MainMenu {
 	})
 
 	return fyne.NewMainMenu(
-		fyne.NewMenu("Settings", lightItem, darkItem, fyne.NewMenuItemSeparator(), syncItem),
+		fyne.NewMenu("Settings", lightItem, darkItem, fyne.NewMenuItemSeparator()),
 		fyne.NewMenu("Help", aboutItem, helpItem),
 	)
 }
