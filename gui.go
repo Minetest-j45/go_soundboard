@@ -87,7 +87,7 @@ func create_menu(a *taskApp) *fyne.MainMenu {
 		a.helpWindow.Show()
 	})
 
-	return fyne.NewMainMenu(=
+	return fyne.NewMainMenu(
 		fyne.NewMenu("Settings", lightItem, darkItem, fyne.NewMenuItemSeparator(), syncItem),
 		fyne.NewMenu("Help", aboutItem, helpItem),
 	)
