@@ -16,8 +16,8 @@ func main() {
 	w.ShowAndRun()
 	
 	for {
+		fmt.Println(showNewSoundWindow)
 		if showNewSoundWindow == true {
-			fmt.Println("showNewSoundWindow = true")
 			w := newSoundWindow()
 			w.ShowAndRun()
 			showNewSoundWindow = false
