@@ -118,7 +118,8 @@ func create_new_tab(a *taskApp) *container.Scroll {
 	a.w_modtime = widget.NewLabel("")
 	a.w_name = widget.NewEntry()
 	a.w_description = widget.NewEntry()
-	a.w_sound_file = widget.NewEntry() /
+	a.w_sound_file = widget.NewEntry()
+	
 	details := widget.NewForm(
 		widget.NewFormItem("Name", a.w_name),
 		widget.NewFormItem("Description", a.w_description),
