@@ -11,7 +11,7 @@ import (
 
 var showNewSoundWindow bool = false
 
-func app() fyne.App {
+func appFunc() fyne.App {
 	a := app.New()
 	
 	return a
@@ -35,7 +35,7 @@ func newSoundWindow(fyneapp fyne.App) fyne.Window {
 }
 
 func mainWindow() fyne.Window {
-    a := app()
+    a := appFunc()
     w := a.NewWindow("Go Soundboard")
 
     hello := widget.NewLabel("Hello, World!")
