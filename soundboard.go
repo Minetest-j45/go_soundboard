@@ -8,7 +8,7 @@ Usage:
 package main
 
 import (
-	"fmt"
+	"log"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	w.ShowAndRun()
 	
 	for {
-		fmt.Println(showNewSoundWindow)
+		log.Println(showNewSoundWindow)
 		if showNewSoundWindow == true {
 			w := newSoundWindow()
 			w.ShowAndRun()
