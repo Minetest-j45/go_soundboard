@@ -71,6 +71,7 @@ type taskApp struct {
 	settingsWindow fyne.Window
 }
 
+var about_text = `some text here`
 
 /*****************************************************************************/
 /*                         Create Menu                                       */
