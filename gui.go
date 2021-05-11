@@ -63,7 +63,7 @@ func main() {
 	for {
 		if showNewSoundWindow == true {
 			w := newSoundWindow()
-			w.ShowAndRun
+			w.ShowAndRun()
 			showNewSoundWindow = false
 		}
 	}
