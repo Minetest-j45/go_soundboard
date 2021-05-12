@@ -112,7 +112,7 @@ func recordAudio() {
 
 func playAudio(audioFile string) {
 	if audioFile == "" {
-		fmt.Println("HOW is this possible?")
+		fmt.Println("No audio file selected")
 		os.Exit(1)
 	}
 
