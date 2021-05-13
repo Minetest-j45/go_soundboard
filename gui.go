@@ -27,6 +27,7 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 }
 
 func mainWindowSetContext(fynewindow fyne.Window) {
+	hello := widget.NewLabel("Hello, World!")
 	fynewindow.SetContent(container.NewVBox(
         	hello,
         	widget.NewButton("Hi", func() {
@@ -44,7 +45,7 @@ func mainWindowSetContext(fynewindow fyne.Window) {
 	))
 }
 
-func mainWindow(fyneapp fyne.App) fyne.window {
+func mainWindow(fyneapp fyne.App) fyne.Window {
 	w := fyneapp.NewWindow("Go Soundboard")
 	hello := widget.NewLabel("Hello, World!")
 	
