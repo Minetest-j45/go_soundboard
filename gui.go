@@ -47,7 +47,6 @@ func mainWindowSetContext(fynewindow fyne.Window) {
 
 func mainWindow(fyneapp fyne.App) fyne.Window {
 	w := fyneapp.NewWindow("Go Soundboard")
-	hello := widget.NewLabel("Hello, World!")
 	
 	mainWindowSetContext(w)
 	
