@@ -30,9 +30,10 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 			//confNewSound(name.Text, file.Text)
 			testFile, err := os.Open(file.Text)
     			if err != nil {
-				hello.SetText("INvalid file")
+				hello.SetText("Invalid file")
 			} else {
 				mainWindowSetContext(fynewindow)
+				 defer testFile.Close()
 			}
 		}),
 		
