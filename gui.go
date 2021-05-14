@@ -22,6 +22,8 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 		}),
 		widget.NewButton("Finish", func() {
 			log.Println("Content was:", input.Text)
+			//confNewSound(name, file)
+			mainWindowSetContext(fynewindow)
 		}),
 		
 	))
