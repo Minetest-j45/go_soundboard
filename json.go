@@ -30,7 +30,7 @@ func openJson(file string) {
   
   var buttons Buttons
   
-  json.Unmarshal(byteValue, &users)
+  json.Unmarshal(byteValue, &buttons)
   
       for i := 0; i < len(buttons.Buttons); i++ {
         fmt.Println("Button name: " + buttons.Buttons[i].Name)
