@@ -39,7 +39,6 @@ func mainWindowSetContext(fynewindow fyne.Window) {
         	}),
         	widget.NewButton("+", func() {
 			//new sound window
-	    		log.Println("test")
 			newSoundWindowSetContext(fynewindow)
             		hello.SetText("Hello, World!")
         	}),
