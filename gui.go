@@ -16,6 +16,7 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 	input.SetPlaceHolder("Enter new sound name here")
 	fynewindow.SetContent(container.NewVBox(
 		hello,
+		input,
 		widget.NewButton("Cancel", func() {
 			mainWindowSetContext(fynewindow)
 		}),
