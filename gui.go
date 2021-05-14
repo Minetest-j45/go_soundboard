@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -27,7 +28,12 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 			log.Println("Name was:", name.Text)
 			log.Println("File was:", file.Text)
 			//confNewSound(name.Text, file.Text)
-			mainWindowSetContext(fynewindow)
+			testFile, err := os.Open(file.Text)
+    			if err != nil {
+				hello.SetText("INvalid file")
+			} else {
+				mainWindowSetContext(fynewindow)
+			}
 		}),
 		
 	))
@@ -46,7 +52,7 @@ func mainWindowSetContext(fynewindow fyne.Window) {
         	widget.NewButton("+", func() {
 			//new sound window
 			newSoundWindowSetContext(fynewindow)
-            		hello.SetText("Hello, World!")
+            		hello.SetText("Making a new sound!")
         	}),
 	))
 }
