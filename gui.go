@@ -12,17 +12,21 @@ import (
 func newSoundWindowSetContext(fynewindow fyne.Window) {
 	//new sound window func
 	hello := widget.NewLabel("Hello, World!")
-	input := widget.NewEntry()
-	input.SetPlaceHolder("Enter new sound name here")
+	name := widget.NewEntry()
+	name.SetPlaceHolder("Enter new sound name here")
+	file := widget.NewEntry()
+	file.SetPlaceHolder("Enter new sound file here")
 	fynewindow.SetContent(container.NewVBox(
 		hello,
-		input,
+		name,
+		file,
 		widget.NewButton("Cancel", func() {
 			mainWindowSetContext(fynewindow)
 		}),
 		widget.NewButton("Finish", func() {
-			log.Println("Content was:", input.Text)
-			//confNewSound(name, file)
+			log.Println("Name was:", name.Text)
+			log.Println("File was:", file.Text)
+			//confNewSound(name.Text, file.Text)
 			mainWindowSetContext(fynewindow)
 		}),
 		
