@@ -59,5 +59,6 @@ func main() {
 	//main window
 	w := mainWindow(a)
 	//show main window
+	w.Resize(fyne.NewSize(400, 700))
 	w.ShowAndRun()
 }
