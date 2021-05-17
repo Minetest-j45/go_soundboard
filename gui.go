@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"os"
-	
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -29,46 +29,45 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 			log.Println("File was:", file.Text)
 			//confNewSound(name.Text, file.Text)
 			testFile, err := os.Open(file.Text)
-    			if err != nil {
+			if err != nil {
 				hello.SetText("Invalid file")
 			} else {
 				mainWindowSetContext(fynewindow)
-				 defer testFile.Close()
+				defer testFile.Close()
 			}
 		}),
-		
 	))
 }
 
 func mainWindowSetContext(fynewindow fyne.Window) {
 	hello := widget.NewLabel("Hello, World!")
 	fynewindow.SetContent(container.NewVBox(
-        	hello,
-        	widget.NewButton("Hi", func() {
-            		hello.SetText("Recording")
-            		recordAudio()
-            		hello.SetText("Playing")
-           	 	// playAudio(audio)
-        	}),
-        	widget.NewButton("+", func() {
+		hello,
+		widget.NewButton("Hi", func() {
+			hello.SetText("Recording")
+			recordAudio()
+			hello.SetText("Playing")
+			// playAudio(audio)
+		}),
+		widget.NewButton("+", func() {
 			//new sound window
 			newSoundWindowSetContext(fynewindow)
-            		hello.SetText("Making a new sound!")
-        	}),
+			hello.SetText("Making a new sound!")
+		}),
 	))
 }
 
 func mainWindow(fyneapp fyne.App) fyne.Window {
 	w := fyneapp.NewWindow("Go Soundboard")
-	
+
 	mainWindowSetContext(w)
-	
+
 	return w
 }
 
 func main() {
 	a := app.New()
-	
+
 	//main window
 	w := mainWindow(a)
 	//show main window
