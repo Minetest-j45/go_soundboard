@@ -38,7 +38,7 @@ func recordAudio() {
 	var capturedSampleCount uint32
 	var pCapturedSamples []byte
 
-	f, err := os.OpenFile("samples.hbaj", os.O_WRONLY | os.O_CREATE, 0777)
+	f, err := os.OpenFile("samples.hbaj", os.O_WRONLY|os.O_CREATE, 0777)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -89,12 +89,9 @@ func recordAudio() {
 			samplesToRead = capturedSampleCount - playbackSampleCount
 		}
 
-		sample := make([]byte, samplesToRead)
-		f.Read(sample)
-		copy(pSample, sample)
+		f.Read(pSample)
 
 		playbackSampleCount += samplesToRead
-
 		if playbackSampleCount == uint32(len(pCapturedSamples)) {
 			playbackSampleCount = 0
 		}
