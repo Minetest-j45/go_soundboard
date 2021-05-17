@@ -36,19 +36,23 @@ func recordAudio() {
 
 	var playbackSampleCount uint32
 	var capturedSampleCount uint32
-	pCapturedSamples := make([]byte, 0)
+	var pCapturedSamples []byte
+
+	f, err := os.OpenFile("samples.hbaj", os.O_WRONLY | os.O_CREATE, 0777)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer f.Close()
 
 	sizeInBytes := uint32(malgo.SampleSizeInBytes(deviceConfig.Capture.Format))
 	onRecvFrames := func(pSample2, pSample []byte, framecount uint32) {
-
 		sampleCount := framecount * deviceConfig.Capture.Channels * sizeInBytes
-
 		newCapturedSampleCount := capturedSampleCount + sampleCount
-
 		pCapturedSamples = append(pCapturedSamples, pSample...)
-
 		capturedSampleCount = newCapturedSampleCount
 
+		f.Write(pSample)
 	}
 
 	fmt.Println("Recording...")
@@ -72,13 +76,22 @@ func recordAudio() {
 
 	device.Uninit()
 
+	f, err = os.Open("samples.hbaj")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	defer f.Close()
+
 	onSendFrames := func(pSample, nil []byte, framecount uint32) {
 		samplesToRead := framecount * deviceConfig.Playback.Channels * sizeInBytes
 		if samplesToRead > capturedSampleCount-playbackSampleCount {
 			samplesToRead = capturedSampleCount - playbackSampleCount
 		}
 
-		copy(pSample, pCapturedSamples[playbackSampleCount:playbackSampleCount+samplesToRead])
+		sample := make([]byte, samplesToRead)
+		f.Read(sample)
+		copy(pSample, sample)
 
 		playbackSampleCount += samplesToRead
 
