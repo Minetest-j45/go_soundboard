@@ -38,3 +38,22 @@ func openJson(file string) {
 		fmt.Println("Button number: " + strconv.Itoa(buttons.Buttons[i].Number))
 	}
 }
+
+/*func confNewSound(name string, file string) {
+	jsonFile, err := os.Open("./soundboard.json")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("Successfully Opened `./soundboard.json`")
+	defer jsonFile.Close()
+
+	byteValue, _ := io.ReadAll(jsonFile)
+
+	var buttons Buttons
+
+	json.Unmarshal(byteValue, &buttons)
+	
+	buttons.Buttons[len(buttons.Buttons)+1].Name := name
+	buttons.Buttons[len(buttons.Buttons)+1].File := file
+	buttons.Buttons[len(buttons.Buttons)+1].Number := strconv.Itoa(len(buttons.Buttons)+1)
+}*/
