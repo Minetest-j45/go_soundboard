@@ -3,7 +3,6 @@ module go_soundboard
 go 1.16
 
 require (
-	fyne.io/fyne v1.4.3 // indirect
 	fyne.io/fyne/v2 v2.0.3
 	github.com/gen2brain/malgo v0.10.35
 	github.com/hajimehoshi/go-mp3 v0.3.2
