@@ -102,7 +102,7 @@ func mainWindow(fyneapp fyne.App) fyne.Window {
 
 func main() {
 	a := app.NewWithID("minetest-j45.go_soundboard")
-	a.SetIcon(theme.FyneLogo())
+	a.SetIcon(resourceCUsersUserGosoundboardGosoundboardlogoPng)
 
 	//main window
 	w := mainWindow(a)
