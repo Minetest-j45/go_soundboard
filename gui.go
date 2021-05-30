@@ -12,14 +12,39 @@ import (
 )
 
 func newSoundWindowSetContext(fynewindow fyne.Window) {
-	//new sound window func
-	hello := widget.NewLabel("Hello, World!")
+	log.Println("Making a new sound")
+
+	bar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.HomeIcon(), func() {
+			mainWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+			newSoundWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+			deleteSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
+			recordSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
+			//dark mode
+			log.Println("Dark mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
+		}),
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
+			//light mode
+			log.Println("Light mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+	)
+
 	name := widget.NewEntry()
 	name.SetPlaceHolder("Enter new sound name here")
 	file := widget.NewEntry()
 	file.SetPlaceHolder("Enter new sound file here")
 	fynewindow.SetContent(container.NewVBox(
-		hello,
+		bar,
 		name,
 		file,
 		widget.NewButton("Cancel", func() {
@@ -30,7 +55,7 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 			log.Println("File was:", file.Text)
 			testFile, err := os.Open(file.Text)
 			if err != nil {
-				hello.SetText("Invalid file")
+				log.Println("Invalid file")
 			} else {
 				mainWindowSetContext(fynewindow)
 				//confNewSound(name.Text, file.Text)
@@ -41,47 +66,106 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 }
 
 func deleteSoundWindowContext(fynewindow fyne.Window) {
+	log.Println("Deleting a sound")
 
-}
-
-func mainWindowSetContext(fynewindow fyne.Window) {
-	hello := widget.NewLabel("Hello, World!")
-	
-	vbox := container.NewVBox()
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.HomeIcon(), func() {
 			mainWindowSetContext(fynewindow)
-			hello.SetText("Hello, World!")
 		}),
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
 			newSoundWindowSetContext(fynewindow)
-			hello.SetText("Making a new sound!")
 		}),
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
 			deleteSoundWindowContext(fynewindow)
-			hello.SetText("Deleting a new sound!")
 		}),
 		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
-			//set record sound window
+			recordSoundWindowContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme./*MediaStopIcon*/VisibilityIcon(), func() {
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
 			//dark mode
+			log.Println("Dark mode")
 			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
 		}),
 		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
 			//light mode
+			log.Println("Light mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+	)
+	
+	fynewindow.SetContent(container.NewVBox(
+		bar,
+	))
+}
+
+func recordSoundWindowContext(fynewindow fyne.Window) {
+	log.Println("Recording a sound")
+
+	bar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.HomeIcon(), func() {
+			mainWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+			newSoundWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+			deleteSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
+			recordSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
+			//dark mode
+			log.Println("Dark mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
+		}),
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
+			//light mode
+			log.Println("Light mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+	)
+	
+	fynewindow.SetContent(container.NewVBox(
+		bar,
+		widget.NewButton("record", func() {
+			recordAudio()
+		}),
+	))
+}
+
+func mainWindowSetContext(fynewindow fyne.Window) {
+	log.Println("Main menu")
+
+	bar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.HomeIcon(), func() {
+			mainWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+			newSoundWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+			deleteSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
+			recordSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
+			//dark mode
+			log.Println("Dark mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
+		}),
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
+			//light mode
+			log.Println("Light mode")
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
 	)
 
 	fynewindow.SetContent(container.NewVBox(
 		bar,
-		vbox,
-		hello,
 		widget.NewButton("Hi", func() {
-			hello.SetText("Recording")
 			recordAudio()
-			hello.SetText("Playing")
 			// playAudio(audio)
 		}),
 		/*widget.NewButton("+", func() {
