@@ -99,6 +99,10 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 	name := widget.NewEntry()
 	name.SetPlaceHolder("Enter the name of the sound you want to delete here")
 
+	cancel := widget.NewButton("Cancel", func() {
+		mainWindowSetContext(fynewindow)
+	})
+
 	delete := widget.NewButton("Delete", func() {
 		//confDeleteSound(name.Text)
 		log.Println("Name was:", name.Text)
@@ -107,6 +111,7 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 	fynewindow.SetContent(container.NewVBox(
 		bar,
 		name,
+		cancel,
 		delete,
 	))
 }
@@ -138,9 +143,13 @@ func recordSoundWindowContext(fynewindow fyne.Window) {
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
 	)
-	
+
+	cancel := widget.NewButton("Cancel", func() {
+		mainWindowSetContext(fynewindow)
+	})
 	fynewindow.SetContent(container.NewVBox(
 		bar,
+		cancel,
 		widget.NewButton("Record", func() {
 			recordAudio()
 		}),
@@ -181,11 +190,6 @@ func mainWindowSetContext(fynewindow fyne.Window) {
 			recordAudio()
 			// playAudio(audio)
 		}),
-		/*widget.NewButton("+", func() {
-			//new sound window
-			newSoundWindowSetContext(fynewindow, fyne.CurrentApp())
-			hello.SetText("Making a new sound!")
-		}),*/
 	))
 }
 
