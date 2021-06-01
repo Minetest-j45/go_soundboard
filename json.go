@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 )
@@ -40,7 +41,7 @@ func openJson() {
 	}
 }
 
-/*func confNewSound(name string, file string) {
+func confNewSound(name string, file string) {
 	jsonFile, err := os.Open("./soundboard.json")
 	if err != nil {
 		os.Create("./soundboard.json")
@@ -51,7 +52,7 @@ func openJson() {
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var buttons []Buttons
+	var buttons Buttons
 
 	json.Unmarshal(byteValue, &buttons)
 
@@ -61,15 +62,15 @@ func openJson() {
 	newButton.File = file
 	newButton.Number = len(buttons)
 
-	buttons.buttons = append(buttons.buttons, newButton)
+	buttons.Buttons = append(buttons.buttons, newButton)
 
-	newButtonBytes, err1 := json.MarshalIndent(&buttons.Buttons, "", " ")
+	newButtonBytes, err1 := json.MarshalIndent(buttons, "", " ")
 	if err1 != nil {
 		log.Println(err1)
 	}
 
 	ioutil.WriteFile("soundboard.json", newButtonBytes, 0666)
-}*/
+}
 
 /*func confDeleteSound(name string) {
 	//read json file, find the name of the sound, delete it
