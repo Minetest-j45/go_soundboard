@@ -57,3 +57,9 @@ func openJson(file string) {
 	buttons.Buttons[len(buttons.Buttons)+1].File := file
 	buttons.Buttons[len(buttons.Buttons)+1].Number := strconv.Itoa(len(buttons.Buttons)+1)
 }*/
+
+/*func confDeleteSound(name string) {
+	//read json file, find the name of the sound, delete it
+	//if it was in json file, main window context
+	//else log invalid sound name
+}*/
