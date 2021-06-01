@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"os"
 	"strconv"
 )
@@ -18,15 +18,16 @@ type Button struct {
 	Number int    `json:"number"`
 }
 
-func openJson(file string) {
-	jsonFile, err := os.Open(file)
+func openJson() {
+	jsonFile, err := os.Open("./soundboard.json")
 	if err != nil {
-		fmt.Println(err)
+		os.Create("./soundboard.json")
+		openJson()
 	}
-	fmt.Println("Successfully Opened " + file)
+	fmt.Println("Successfully Opened soundboard.json")
 	defer jsonFile.Close()
 
-	byteValue, _ := io.ReadAll(jsonFile)
+	byteValue, _ := ioutil.ReadAll(jsonFile)
 
 	var buttons Buttons
 
@@ -42,20 +43,32 @@ func openJson(file string) {
 /*func confNewSound(name string, file string) {
 	jsonFile, err := os.Open("./soundboard.json")
 	if err != nil {
-		fmt.Println(err)
+		os.Create("./soundboard.json")
+		confNewSound(name, file)
 	}
 	fmt.Println("Successfully Opened `./soundboard.json`")
 	defer jsonFile.Close()
 
-	byteValue, _ := io.ReadAll(jsonFile)
+	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	var buttons Buttons
+	var buttons []Buttons
 
 	json.Unmarshal(byteValue, &buttons)
-	
-	buttons.Buttons[len(buttons.Buttons)+1].Name := name
-	buttons.Buttons[len(buttons.Buttons)+1].File := file
-	buttons.Buttons[len(buttons.Buttons)+1].Number := strconv.Itoa(len(buttons.Buttons)+1)
+
+	newButton := &Button{}
+
+	newButton.Name = name
+	newButton.File = file
+	newButton.Number = len(buttons)
+
+	buttons.buttons = append(buttons.buttons, newButton)
+
+	newButtonBytes, err1 := json.MarshalIndent(&buttons.Buttons, "", " ")
+	if err1 != nil {
+		log.Println(err1)
+	}
+
+	ioutil.WriteFile("soundboard.json", newButtonBytes, 0666)
 }*/
 
 /*func confDeleteSound(name string) {

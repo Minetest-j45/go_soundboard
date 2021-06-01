@@ -55,6 +55,7 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 			log.Println("Invalid file")
 		} else {
 			mainWindowSetContext(fynewindow)
+			openJson()
 			//confNewSound(name.Text, file.Text)
 			defer testFile.Close()
 		}
@@ -107,7 +108,7 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 		//confDeleteSound(name.Text)
 		log.Println("Name was:", name.Text)
 	})
-	
+
 	fynewindow.SetContent(container.NewVBox(
 		bar,
 		name,

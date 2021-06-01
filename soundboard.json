@@ -1,1 +1,10 @@
 
+{
+    "buttons": [
+        {
+            "name": "test",
+            "file": "noice",
+            "number": 1
+        }
+    ]
+}
