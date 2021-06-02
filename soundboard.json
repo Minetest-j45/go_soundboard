@@ -1,10 +1,9 @@
-
 {
-    "buttons": [
-        {
-            "name": "test",
-            "file": "noice",
-            "number": 1
-        }
-    ]
+ "buttons": [
+  {
+   "name": "test",
+   "file": "noice",
+   "number": 0
+  }
+ ]
 }

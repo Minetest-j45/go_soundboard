@@ -56,20 +56,20 @@ func confNewSound(name string, file string) {
 
 	json.Unmarshal(byteValue, &buttons)
 
-	newButton := &Button{}
+	newButton := Button{}
 
 	newButton.Name = name
 	newButton.File = file
-	newButton.Number = len(buttons)
+	newButton.Number = len(buttons.Buttons)
 
-	buttons.Buttons = append(buttons.buttons, newButton)
+	buttons.Buttons = append(buttons.Buttons, newButton)
 
 	newButtonBytes, err1 := json.MarshalIndent(buttons, "", " ")
 	if err1 != nil {
 		log.Println(err1)
 	}
 
-	ioutil.WriteFile("soundboard.json", newButtonBytes, 0666)
+	ioutil.WriteFile("./soundboard.json", newButtonBytes, 0666)
 }
 
 /*func confDeleteSound(name string) {
