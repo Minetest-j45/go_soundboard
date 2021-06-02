@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"strconv"
+	//"strconv"
 )
 
 type Buttons struct {
@@ -19,7 +19,7 @@ type Button struct {
 	Number int    `json:"number"`
 }
 
-func openJson() {
+func openJson() Buttons {
 	jsonFile, err := os.Open("./soundboard.json")
 	if err != nil {
 		os.Create("./soundboard.json")
@@ -34,11 +34,12 @@ func openJson() {
 
 	json.Unmarshal(byteValue, &buttons)
 
-	for i := 0; i < len(buttons.Buttons); i++ {
+	/*for i := 0; i < len(buttons.Buttons); i++ {
 		fmt.Println("Button name: " + buttons.Buttons[i].Name)
 		fmt.Println("Button file: " + buttons.Buttons[i].File)
 		fmt.Println("Button number: " + strconv.Itoa(buttons.Buttons[i].Number))
-	}
+	}*/
+	return buttons
 }
 
 func confNewSound(name string, file string) {
