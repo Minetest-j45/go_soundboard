@@ -2,7 +2,7 @@
  "buttons": [
   {
    "name": "test",
-   "file": "noice",
+   "file": "./recordings/test.wav",
    "number": 0
   }
  ]
