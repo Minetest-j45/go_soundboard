@@ -9,6 +9,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
+	"github.com/gen2brain/malgo"
 )
 
 func newSoundWindowSetContext(fynewindow fyne.Window) {
@@ -118,7 +119,7 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 }
 
 func recordSoundWindowContext(fynewindow fyne.Window) {
-	log.Println("Recording a sound")
+	log.Println("Record a sound")
 
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.HomeIcon(), func() {
@@ -152,8 +153,46 @@ func recordSoundWindowContext(fynewindow fyne.Window) {
 		bar,
 		cancel,
 		widget.NewButton("Record", func() {
-			recordAudio()
+			recordAudio(fynewindow)
 		}),
+	))
+}
+
+func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device) {
+	log.Println("Recording a sound")
+
+	bar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.HomeIcon(), func() {
+			mainWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+			newSoundWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+			deleteSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
+			recordSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
+			//dark mode
+			log.Println("Dark mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
+		}),
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
+			//light mode
+			log.Println("Light mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+	)
+
+	stop := widget.NewButton("Finish", func() {
+		device.Uninit()
+		mainWindowSetContext(fynewindow)
+	})
+	fynewindow.SetContent(container.NewVBox(
+		bar,
+		stop,
 	))
 }
 

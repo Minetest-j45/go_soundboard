@@ -7,13 +7,14 @@ import (
 	"path/filepath"
 	"strings"
 
+	"fyne.io/fyne/v2"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/youpy/go-wav"
 
 	"github.com/gen2brain/malgo"
 )
 
-func recordAudio() {
+func recordAudio(fynewindow fyne.Window) {
 	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
 		fmt.Printf("LOG <%v>\n", message)
 	})
@@ -34,7 +35,7 @@ func recordAudio() {
 	deviceConfig.SampleRate = 44100
 	deviceConfig.Alsa.NoMMap = 1
 
-	var playbackSampleCount uint32
+	//var playbackSampleCount uint32
 	var capturedSampleCount uint32
 	var pCapturedSamples []byte
 
@@ -71,7 +72,8 @@ func recordAudio() {
 		os.Exit(1)
 	}
 
-	fmt.Println("Press Enter to stop recording...")
+	recordingSoundWindowContext(fynewindow, device)
+	/*fmt.Println("Press Enter to stop recording...")
 	fmt.Scanln()
 
 	device.Uninit()
@@ -117,7 +119,7 @@ func recordAudio() {
 	fmt.Println("Press Enter to quit...")
 	fmt.Scanln()
 
-	device.Uninit()
+	device.Uninit()*/
 }
 
 func playAudio(audioFile string) {
