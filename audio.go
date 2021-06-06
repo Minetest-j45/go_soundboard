@@ -126,7 +126,7 @@ func playAudio(audioFile string) {
 		os.Exit(1)
 	}
 
-	file, err := os.Open(os.Args[1])
+	file, err := os.Open(audioFile)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

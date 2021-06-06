@@ -186,9 +186,13 @@ func mainWindowSetContext(fynewindow fyne.Window) {
 	)
 
 	//buttons := openJson()
+	test := widget.NewButton("test", func() {
+		playAudio("./recordings/test.wav")
+	})
 
 	fynewindow.SetContent(container.NewVBox(
 		bar,
+		test,
 		//sounds
 
 	))
