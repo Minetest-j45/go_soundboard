@@ -38,6 +38,11 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 			log.Println("Light mode")
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
+		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
+			//refresh
+			log.Println("Refresh")
+			mainWindowSetContext(fynewindow)
+		}),
 	)
 
 	name := widget.NewEntry()
@@ -96,6 +101,11 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 			log.Println("Light mode")
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
+		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
+			//refresh
+			log.Println("Refresh")
+			mainWindowSetContext(fynewindow)
+		}),
 	)
 
 	name := widget.NewEntry()
@@ -106,7 +116,7 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 	})
 
 	delete := widget.NewButton("Delete", func() {
-		//confDeleteSound(name.Text)
+		confDeleteSound(name.Text, fynewindow)
 		log.Println("Name was:", name.Text)
 	})
 
@@ -143,6 +153,11 @@ func recordSoundWindowContext(fynewindow fyne.Window) {
 			//light mode
 			log.Println("Light mode")
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
+			//refresh
+			log.Println("Refresh")
+			mainWindowSetContext(fynewindow)
 		}),
 	)
 
@@ -184,6 +199,11 @@ func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device) {
 			log.Println("Light mode")
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
+		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
+			//refresh
+			log.Println("Refresh")
+			mainWindowSetContext(fynewindow)
+		}),
 	)
 
 	stop := widget.NewButton("Finish", func() {
@@ -221,6 +241,11 @@ func mainWindowSetContext(fynewindow fyne.Window) {
 			//light mode
 			log.Println("Light mode")
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
+			//refresh
+			log.Println("Refresh")
+			mainWindowSetContext(fynewindow)
 		}),
 	)
 

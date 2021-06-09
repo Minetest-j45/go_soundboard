@@ -6,7 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	//"strconv"
+
+	"fyne.io/fyne/v2"
 )
 
 type Buttons struct {
@@ -14,9 +15,9 @@ type Buttons struct {
 }
 
 type Button struct {
-	Name   string `json:"name"`
-	File   string `json:"file"`
-	Number int    `json:"number"`
+	Name string `json:"name"`
+	File string `json:"file"`
+	//Number int    `json:"number"`
 }
 
 func openJson() Buttons {
@@ -25,7 +26,7 @@ func openJson() Buttons {
 		os.Create("./soundboard.json")
 		openJson()
 	}
-	fmt.Println("Successfully Opened soundboard.json")
+	fmt.Println("Successfully Opened `./soundboard.json`")
 	defer jsonFile.Close()
 
 	byteValue, _ := ioutil.ReadAll(jsonFile)
@@ -37,31 +38,17 @@ func openJson() Buttons {
 	/*for i := 0; i < len(buttons.Buttons); i++ {
 		fmt.Println("Button name: " + buttons.Buttons[i].Name)
 		fmt.Println("Button file: " + buttons.Buttons[i].File)
-		fmt.Println("Button number: " + strconv.Itoa(buttons.Buttons[i].Number))
 	}*/
 	return buttons
 }
 
 func confNewSound(name string, file string) {
-	jsonFile, err := os.Open("./soundboard.json")
-	if err != nil {
-		os.Create("./soundboard.json")
-		confNewSound(name, file)
-	}
-	fmt.Println("Successfully Opened `./soundboard.json`")
-	defer jsonFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(jsonFile)
-
-	var buttons Buttons
-
-	json.Unmarshal(byteValue, &buttons)
+	buttons := openJson()
 
 	newButton := Button{}
 
 	newButton.Name = name
 	newButton.File = file
-	newButton.Number = len(buttons.Buttons)
 
 	buttons.Buttons = append(buttons.Buttons, newButton)
 
@@ -73,8 +60,26 @@ func confNewSound(name string, file string) {
 	ioutil.WriteFile("./soundboard.json", newButtonBytes, 0666)
 }
 
-/*func confDeleteSound(name string) {
-	//read json file, find the name of the sound, delete it
-	//if it was in json file, main window context
-	//else log invalid sound name
-}*/
+func confDeleteSound(name string, fynewindow fyne.Window) {
+	buttons := openJson()
+
+	for _, v := range buttons.Buttons {
+		if v.Name == name {
+			fmt.Println(v)
+			length := len(buttons.Buttons)
+			for index, field := range buttons.Buttons {
+				if field.Name == name {
+					if index == length-1 {
+						buttons.Buttons = buttons.Buttons[0:index]
+					} else {
+						buttons.Buttons = append(buttons.Buttons[0:index], buttons.Buttons[index+1:]...)
+					}
+				}
+			}
+
+			out, _ := json.MarshalIndent(buttons, "", "  ")
+			_ = ioutil.WriteFile("./soundboard.json", out, 0755)
+			mainWindowSetContext(fynewindow)
+		}
+	}
+}
