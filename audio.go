@@ -14,7 +14,7 @@ import (
 	"github.com/gen2brain/malgo"
 )
 
-func recordAudio(fynewindow fyne.Window) {
+func recordAudio(fynewindow fyne.Window, saveTo string) {
 	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
 		fmt.Printf("LOG <%v>\n", message)
 	})
@@ -39,7 +39,14 @@ func recordAudio(fynewindow fyne.Window) {
 	var capturedSampleCount uint32
 	var pCapturedSamples []byte
 
-	f, err := os.OpenFile("samples.hbaj", os.O_WRONLY|os.O_CREATE, 0777)
+	testFile, err := os.Open("./recording/" + saveTo + ".hbaj")
+	if err != nil {
+		os.Create("./recording/" + saveTo + ".hbaj")
+		recordAudio(fynewindow, saveTo)
+	}
+	defer testFile.Close()
+
+	f, err := os.OpenFile("./recording/"+saveTo+".hbaj", os.O_WRONLY|os.O_CREATE, 0777)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -72,7 +79,7 @@ func recordAudio(fynewindow fyne.Window) {
 		os.Exit(1)
 	}
 
-	recordingSoundWindowContext(fynewindow, device)
+	recordingSoundWindowContext(fynewindow, device, saveTo)
 	/*fmt.Println("Press Enter to stop recording...")
 	fmt.Scanln()
 

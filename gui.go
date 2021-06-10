@@ -161,19 +161,25 @@ func recordSoundWindowContext(fynewindow fyne.Window) {
 		}),
 	)
 
+	name := widget.NewEntry()
+	name.SetPlaceHolder("Enter the name that you want the recording to be saved to here")
+
 	cancel := widget.NewButton("Cancel", func() {
 		mainWindowSetContext(fynewindow)
 	})
+
+	record := widget.NewButton("Record", func() {
+		recordAudio(fynewindow, name.Text)
+	})
 	fynewindow.SetContent(container.NewVBox(
 		bar,
+		name,
 		cancel,
-		widget.NewButton("Record", func() {
-			recordAudio(fynewindow)
-		}),
+		record,
 	))
 }
 
-func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device) {
+func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device, saveTo string) {
 	log.Println("Recording a sound")
 
 	bar := widget.NewToolbar(
@@ -208,6 +214,7 @@ func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device) {
 
 	stop := widget.NewButton("Finish", func() {
 		device.Uninit()
+		playAudio("./recording/" + saveTo + ".hbaj")
 		mainWindowSetContext(fynewindow)
 	})
 	fynewindow.SetContent(container.NewVBox(
