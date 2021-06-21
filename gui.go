@@ -264,8 +264,6 @@ func mainWindowSetContext(fynewindow fyne.Window) {
 	fynewindow.SetContent(container.NewVBox(
 		bar,
 		test,
-		//sounds
-
 	))
 }
 
