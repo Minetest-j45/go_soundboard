@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -11,6 +13,48 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/gen2brain/malgo"
 )
+
+func makeJsonToButtons(fynewindow fyne.Window) []fyne.CanvasObject {
+	buttons := openJson()
+	var btns []fyne.CanvasObject
+	bar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.HomeIcon(), func() {
+			mainWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+			newSoundWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+			deleteSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
+			recordSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
+			//dark mode
+			log.Println("Dark mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
+		}),
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
+			//light mode
+			log.Println("Light mode")
+			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
+			//refresh
+			log.Println("Refresh")
+			mainWindowSetContext(fynewindow)
+		}),
+	)
+	btns = append(btns, bar)
+	for _, btn := range buttons.Buttons {
+		newbtn := widget.NewButton(btn.Name, func() {
+			playAudio(btn.File, fynewindow)
+		})
+		btns = append(btns, newbtn)
+	}
+	return btns
+}
 
 func newSoundWindowSetContext(fynewindow fyne.Window) {
 	log.Println("Making a new sound")
@@ -60,10 +104,21 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 		if err != nil {
 			log.Println("Invalid file")
 		} else {
-			mainWindowSetContext(fynewindow)
-			//openJson()
-			confNewSound(name.Text, file.Text)
 			defer testFile.Close()
+		}
+		switch strings.ToLower(filepath.Ext(file.Text)) {
+		case ".wav":
+			mainWindowSetContext(fynewindow)
+			confNewSound(name.Text, file.Text)
+		case ".mp3":
+			mainWindowSetContext(fynewindow)
+			confNewSound(name.Text, file.Text)
+		case ".hbaj":
+			mainWindowSetContext(fynewindow)
+			confNewSound(name.Text, file.Text)
+		default:
+			log.Println("Invalid file extension, we only support .wav, .mp3 and our custom format(.hbaj)")
+			return
 		}
 	})
 	fynewindow.SetContent(container.NewVBox(
@@ -214,8 +269,10 @@ func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device, s
 
 	stop := widget.NewButton("Finish", func() {
 		device.Uninit()
-		playAudio("./recording/" + saveTo + ".hbaj")
+		confNewSound(saveTo, "./recordings/"+saveTo+".hbaj")
+		playAudio("./recordings/"+saveTo+".hbaj", fynewindow)
 		mainWindowSetContext(fynewindow)
+
 	})
 	fynewindow.SetContent(container.NewVBox(
 		bar,
@@ -226,44 +283,9 @@ func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device, s
 func mainWindowSetContext(fynewindow fyne.Window) {
 	log.Println("Main menu")
 
-	bar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.HomeIcon(), func() {
-			mainWindowSetContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			newSoundWindowSetContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
-			deleteSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
-			recordSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
-			//dark mode
-			log.Println("Dark mode")
-			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
-		}),
-		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
-			//light mode
-			log.Println("Light mode")
-			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
-		}),
-		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
-			//refresh
-			log.Println("Refresh")
-			mainWindowSetContext(fynewindow)
-		}),
-	)
-
-	//buttons := openJson()
-	test := widget.NewButton("test", func() {
-		playAudio("./recordings/test.wav")
-	})
-
+	buttons := makeJsonToButtons(fynewindow)
 	fynewindow.SetContent(container.NewVBox(
-		bar,
-		test,
+		buttons...,
 	))
 }
 
