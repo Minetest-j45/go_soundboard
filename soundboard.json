@@ -3,10 +3,6 @@
   {
    "name": "test",
    "file": "./recordings/test.wav"
-  },
-  {
-   "name": "lol",
-   "file": "./recordings/lol.hbaj"
   }
  ]
 }
