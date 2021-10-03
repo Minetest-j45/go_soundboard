@@ -3,83 +3,19 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/youpy/go-wav"
 
 	"github.com/gen2brain/malgo"
 )
-
-func recordAudio(fynewindow fyne.Window, saveTo string) {
-	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
-		fmt.Printf("LOG <%v>\n", message)
-	})
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer func() {
-		_ = ctx.Uninit()
-		ctx.Free()
-	}()
-
-	deviceConfig := malgo.DefaultDeviceConfig(malgo.Duplex)
-	deviceConfig.Capture.Format = malgo.FormatS16
-	deviceConfig.Capture.Channels = 1
-	deviceConfig.Playback.Format = malgo.FormatS16
-	deviceConfig.Playback.Channels = 1
-	deviceConfig.SampleRate = 44100
-	deviceConfig.Alsa.NoMMap = 1
-
-	//var playbackSampleCount uint32
-	var capturedSampleCount uint32
-	var pCapturedSamples []byte
-
-	testFile, err := os.Open("./recordings/" + saveTo + ".hbaj")
-	if err != nil {
-		os.Create("./recordings/" + saveTo + ".hbaj")
-		recordAudio(fynewindow, saveTo)
-	}
-	defer testFile.Close()
-
-	f, err := os.Open("./recordings/" + saveTo + ".hbaj")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer f.Close()
-
-	sizeInBytes := uint32(malgo.SampleSizeInBytes(deviceConfig.Capture.Format))
-	onRecvFrames := func(pSample2, pSample []byte, framecount uint32) {
-		sampleCount := framecount * deviceConfig.Capture.Channels * sizeInBytes
-		newCapturedSampleCount := capturedSampleCount + sampleCount
-		pCapturedSamples = append(pCapturedSamples, pSample...)
-		capturedSampleCount = newCapturedSampleCount
-
-		f.Write(pSample)
-	}
-
-	fmt.Println("Recording...")
-	captureCallbacks := malgo.DeviceCallbacks{
-		Data: onRecvFrames,
-	}
-	device, err := malgo.InitDevice(ctx.Context, deviceConfig, captureCallbacks)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	err = device.Start()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	recordingSoundWindowContext(fynewindow, device, saveTo)
-}
 
 func playAudio(audioFile string, fynewindow fyne.Window) {
 	if audioFile == "" {
@@ -95,9 +31,35 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 
 	defer file.Close()
 
+	switch strings.ToLower(filepath.Ext(audioFile)) {
+	case ".wav":
+		playNormalAudio(audioFile, fynewindow)
+
+	case ".mp3":
+		playNormalAudio(audioFile, fynewindow)
+	default:
+		fmt.Println("Not a valid file.")
+		os.Exit(1)
+	}
+}
+
+func playNormalAudio(audioFile string, fynewindow fyne.Window) {
+	if audioFile == "" {
+		fmt.Println("No audio file selected")
+		os.Exit(1)
+	}
+
+	file, err := os.Open(audioFile)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	defer file.Close()
+
 	var reader io.Reader
 	var channels, sampleRate uint32
-
+	//log.Println(strings.ToLower(filepath.Ext(audioFile)))
 	switch strings.ToLower(filepath.Ext(audioFile)) {
 	case ".wav":
 		w := wav.NewReader(file)
@@ -121,8 +83,6 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 		reader = m
 		channels = 2
 		sampleRate = uint32(m.SampleRate())
-	case ".hbaj":
-		playCustomAudio(audioFile, fynewindow)
 	default:
 		fmt.Println("Not a valid file.")
 		os.Exit(1)
@@ -159,7 +119,6 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	defer device.Uninit()
 
 	err = device.Start()
 	if err != nil {
@@ -167,70 +126,12 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 		os.Exit(1)
 	}
 
-	fmt.Println("Press Enter to quit...")
-	fmt.Scanln()
-}
-
-func playCustomAudio(audioFile string, fynewindow fyne.Window) {
-	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
-		fmt.Printf("LOG <%v>\n", message)
+	log.Println("Playing a sound")
+	stop := widget.NewButton("Stop", func() {
+		device.Uninit()
+		mainWindowSetContext(fynewindow)
 	})
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer func() {
-		_ = ctx.Uninit()
-		ctx.Free()
-	}()
-
-	var playbackSampleCount uint32
-	var capturedSampleCount uint32
-	var pCapturedSamples []byte
-
-	deviceConfig := malgo.DefaultDeviceConfig(malgo.Duplex)
-	deviceConfig.Capture.Format = malgo.FormatS16
-	deviceConfig.Capture.Channels = 1
-	deviceConfig.Playback.Format = malgo.FormatS16
-	deviceConfig.Playback.Channels = 1
-	deviceConfig.SampleRate = 44100
-	deviceConfig.Alsa.NoMMap = 1
-
-	f, err := os.Open(audioFile)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer f.Close()
-	sizeInBytes := uint32(malgo.SampleSizeInBytes(deviceConfig.Capture.Format))
-	onSendFrames := func(pSample, nil []byte, framecount uint32) {
-		samplesToRead := framecount * deviceConfig.Playback.Channels * sizeInBytes
-		if samplesToRead > capturedSampleCount-playbackSampleCount {
-			samplesToRead = capturedSampleCount - playbackSampleCount
-		}
-
-		f.Read(pSample)
-
-		playbackSampleCount += samplesToRead
-		if playbackSampleCount == uint32(len(pCapturedSamples)) {
-			playbackSampleCount = 0
-		}
-	}
-
-	fmt.Println("Playing...")
-	playbackCallbacks := malgo.DeviceCallbacks{
-		Data: onSendFrames,
-	}
-
-	device, err := malgo.InitDevice(ctx.Context, deviceConfig, playbackCallbacks)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	err = device.Start()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	fynewindow.SetContent(container.NewVBox(
+		stop,
+	))
 }

@@ -11,7 +11,6 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/gen2brain/malgo"
 )
 
 func makeJsonToButtons(fynewindow fyne.Window) []fyne.CanvasObject {
@@ -26,9 +25,6 @@ func makeJsonToButtons(fynewindow fyne.Window) []fyne.CanvasObject {
 		}),
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
 			deleteSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
-			recordSoundWindowContext(fynewindow)
 		}),
 		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
 			//dark mode
@@ -69,9 +65,6 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
 			deleteSoundWindowContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
-			recordSoundWindowContext(fynewindow)
-		}),
 		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
 			//dark mode
 			log.Println("Dark mode")
@@ -110,14 +103,13 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 		case ".wav":
 			mainWindowSetContext(fynewindow)
 			confNewSound(name.Text, file.Text)
+			mainWindowSetContext(fynewindow)
 		case ".mp3":
 			mainWindowSetContext(fynewindow)
 			confNewSound(name.Text, file.Text)
-		case ".hbaj":
 			mainWindowSetContext(fynewindow)
-			confNewSound(name.Text, file.Text)
 		default:
-			log.Println("Invalid file extension, we only support .wav, .mp3 and our custom format(.hbaj)")
+			log.Println("Invalid file extension, we only support .wav and .mp3 ")
 			return
 		}
 	})
@@ -142,9 +134,6 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 		}),
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
 			deleteSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
-			recordSoundWindowContext(fynewindow)
 		}),
 		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
 			//dark mode
@@ -180,103 +169,6 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 		name,
 		cancel,
 		delete,
-	))
-}
-
-func recordSoundWindowContext(fynewindow fyne.Window) {
-	log.Println("Record a sound")
-
-	bar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.HomeIcon(), func() {
-			mainWindowSetContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			newSoundWindowSetContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
-			deleteSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
-			recordSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
-			//dark mode
-			log.Println("Dark mode")
-			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
-		}),
-		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
-			//light mode
-			log.Println("Light mode")
-			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
-		}),
-		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
-			//refresh
-			log.Println("Refresh")
-			mainWindowSetContext(fynewindow)
-		}),
-	)
-
-	name := widget.NewEntry()
-	name.SetPlaceHolder("Enter the name that you want the recording to be saved to here")
-
-	cancel := widget.NewButton("Cancel", func() {
-		mainWindowSetContext(fynewindow)
-	})
-
-	record := widget.NewButton("Record", func() {
-		recordAudio(fynewindow, name.Text)
-	})
-	fynewindow.SetContent(container.NewVBox(
-		bar,
-		name,
-		cancel,
-		record,
-	))
-}
-
-func recordingSoundWindowContext(fynewindow fyne.Window, device *malgo.Device, saveTo string) {
-	log.Println("Recording a sound")
-
-	bar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.HomeIcon(), func() {
-			mainWindowSetContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			newSoundWindowSetContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
-			deleteSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.MediaRecordIcon(), func() {
-			recordSoundWindowContext(fynewindow)
-		}),
-		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
-			//dark mode
-			log.Println("Dark mode")
-			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
-		}),
-		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
-			//light mode
-			log.Println("Light mode")
-			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
-		}),
-		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
-			//refresh
-			log.Println("Refresh")
-			mainWindowSetContext(fynewindow)
-		}),
-	)
-
-	stop := widget.NewButton("Finish", func() {
-		device.Uninit()
-		confNewSound(saveTo, "./recordings/"+saveTo+".hbaj")
-		playAudio("./recordings/"+saveTo+".hbaj", fynewindow)
-		mainWindowSetContext(fynewindow)
-
-	})
-	fynewindow.SetContent(container.NewVBox(
-		bar,
-		stop,
 	))
 }
 

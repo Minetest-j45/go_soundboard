@@ -1,8 +1,8 @@
 {
- "buttons": [
-  {
-   "name": "test",
-   "file": "./recordings/test.wav"
-  }
- ]
+  "buttons": [
+    {
+      "name": "test",
+      "file": "./test.wav"
+    }
+  ]
 }
