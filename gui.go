@@ -17,35 +17,31 @@ func makeJsonToButtons(fynewindow fyne.Window) []fyne.CanvasObject {
 	buttons := openJson()
 	var btns []fyne.CanvasObject
 	bar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.HomeIcon(), func() {
+		widget.NewToolbarAction(theme.HomeIcon(), func() { //home
 			mainWindowSetContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() { //add
 			newSoundWindowSetContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() { //remove
 			deleteSoundWindowContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
-			//dark mode
-			log.Println("Dark mode")
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() { //dark mode
 			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
 		}),
-		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
-			//light mode
-			log.Println("Light mode")
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() { //light mode
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
-		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
-			//refresh
+		/*widget.NewToolbarAction(theme.ViewRefreshIcon(), func() { //refresh
 			log.Println("Refresh")
 			mainWindowSetContext(fynewindow)
-		}),
+		}),*/
 	)
 	btns = append(btns, bar)
 	for _, btn := range buttons.Buttons {
+		file := btn.File
 		newbtn := widget.NewButton(btn.Name, func() {
-			playAudio(btn.File, fynewindow)
+			go playAudio(file, fynewindow)
 		})
 		btns = append(btns, newbtn)
 	}
@@ -53,33 +49,26 @@ func makeJsonToButtons(fynewindow fyne.Window) []fyne.CanvasObject {
 }
 
 func newSoundWindowSetContext(fynewindow fyne.Window) {
-	log.Println("Making a new sound")
-
 	bar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.HomeIcon(), func() {
+		widget.NewToolbarAction(theme.HomeIcon(), func() { //home
 			mainWindowSetContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() { //add
 			newSoundWindowSetContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() { //remove
 			deleteSoundWindowContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
-			//dark mode
-			log.Println("Dark mode")
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() { //dark mode
 			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
 		}),
-		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
-			//light mode
-			log.Println("Light mode")
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() { //light mode
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
-		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
-			//refresh
+		/*widget.NewToolbarAction(theme.ViewRefreshIcon(), func() { //refresh
 			log.Println("Refresh")
 			mainWindowSetContext(fynewindow)
-		}),
+		}),*/
 	)
 
 	name := widget.NewEntry()
@@ -93,12 +82,20 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 	finish := widget.NewButton("Finish", func() {
 		log.Println("Name was:", name.Text)
 		log.Println("File was:", file.Text)
+
+		exists := confExists(name.Text)
+		if exists {
+			log.Println("A button with the name `" + name.Text + "` already exists")
+			return
+		}
+
 		testFile, err := os.Open(file.Text)
 		if err != nil {
-			log.Println("Invalid file")
-		} else {
-			defer testFile.Close()
+			log.Println(err)
+			return
 		}
+		defer testFile.Close()
+
 		switch strings.ToLower(filepath.Ext(file.Text)) {
 		case ".wav":
 			mainWindowSetContext(fynewindow)
@@ -123,33 +120,26 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 }
 
 func deleteSoundWindowContext(fynewindow fyne.Window) {
-	log.Println("Deleting a sound")
-
 	bar := widget.NewToolbar(
-		widget.NewToolbarAction(theme.HomeIcon(), func() {
+		widget.NewToolbarAction(theme.HomeIcon(), func() { //home
 			mainWindowSetContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() { //add
 			newSoundWindowSetContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() { //remove
 			deleteSoundWindowContext(fynewindow)
 		}),
-		widget.NewToolbarAction(theme.VisibilityIcon(), func() {
-			//dark mode
-			log.Println("Dark mode")
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() { //dark mode
 			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
 		}),
-		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() {
-			//light mode
-			log.Println("Light mode")
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() { //light mode
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
-		widget.NewToolbarAction(theme.ViewRefreshIcon(), func() {
-			//refresh
+		/*widget.NewToolbarAction(theme.ViewRefreshIcon(), func() { //refresh
 			log.Println("Refresh")
 			mainWindowSetContext(fynewindow)
-		}),
+		}),*/
 	)
 
 	name := widget.NewEntry()
@@ -173,8 +163,6 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 }
 
 func mainWindowSetContext(fynewindow fyne.Window) {
-	log.Println("Main menu")
-
 	buttons := makeJsonToButtons(fynewindow)
 	fynewindow.SetContent(container.NewVBox(
 		buttons...,
@@ -190,12 +178,10 @@ func mainWindow(fyneapp fyne.App) fyne.Window {
 }
 
 func main() {
-	a := app.NewWithID("minetest-j45.go_soundboard")
+	a := app.NewWithID("com.minetest-j45.go_soundboard")
 	a.SetIcon(resourceCUsersUserGosoundboardGosoundboardlogoPng)
 
-	//main window
 	w := mainWindow(a)
-	//show main window
 	w.Resize(fyne.NewSize(700, 400))
 	w.ShowAndRun()
 }

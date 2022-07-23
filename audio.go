@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
 	"github.com/hajimehoshi/go-mp3"
 	"github.com/youpy/go-wav"
 
@@ -19,81 +18,66 @@ import (
 
 func playAudio(audioFile string, fynewindow fyne.Window) {
 	if audioFile == "" {
-		fmt.Println("No audio file selected")
-		os.Exit(1)
+		log.Println("No audio file selected")
+		return
 	}
 
 	file, err := os.Open(audioFile)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	defer file.Close()
-
-	switch strings.ToLower(filepath.Ext(audioFile)) {
-	case ".wav":
-		playNormalAudio(audioFile, fynewindow)
-
-	case ".mp3":
-		playNormalAudio(audioFile, fynewindow)
-	default:
-		fmt.Println("Not a valid file.")
-		os.Exit(1)
-	}
-}
-
-func playNormalAudio(audioFile string, fynewindow fyne.Window) {
-	if audioFile == "" {
-		fmt.Println("No audio file selected")
-		os.Exit(1)
-	}
-
-	file, err := os.Open(audioFile)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Println(err)
+		return
 	}
 
 	defer file.Close()
 
 	var reader io.Reader
 	var channels, sampleRate uint32
-	//log.Println(strings.ToLower(filepath.Ext(audioFile)))
+	var dur time.Duration
+
 	switch strings.ToLower(filepath.Ext(audioFile)) {
 	case ".wav":
 		w := wav.NewReader(file)
 		f, err := w.Format()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Println(err)
+			return
 		}
 
 		reader = w
 		channels = uint32(f.NumChannels)
 		sampleRate = f.SampleRate
 
+		dur, err = w.Duration()
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	case ".mp3":
 		m, err := mp3.NewDecoder(file)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			log.Println(err)
+			return
 		}
 
 		reader = m
 		channels = 2
 		sampleRate = uint32(m.SampleRate())
+
+		sampleSize := 4                              // From documentation.
+		samples := int(m.Length()) / sampleSize      // Number of samples.
+		audioLength := int(samples) / m.SampleRate() // Audio length in seconds.
+		dur = time.Duration(audioLength * int(math.Pow(10, 9)))
 	default:
-		fmt.Println("Not a valid file.")
-		os.Exit(1)
+		log.Println("Not a valid file.")
+		return
 	}
 
 	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {
-		fmt.Printf("LOG <%v>\n", message)
+		log.Printf("LOG <%v>\n", message)
 	})
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Println(err)
+		return
 	}
 	defer func() {
 		_ = ctx.Uninit()
@@ -106,6 +90,8 @@ func playNormalAudio(audioFile string, fynewindow fyne.Window) {
 	deviceConfig.SampleRate = sampleRate
 	deviceConfig.Alsa.NoMMap = 1
 
+	var device *malgo.Device
+
 	// This is the function that's used for sending more data to the device for playback.
 	onSamples := func(pOutputSample, pInputSamples []byte, framecount uint32) {
 		io.ReadFull(reader, pOutputSample)
@@ -114,24 +100,21 @@ func playNormalAudio(audioFile string, fynewindow fyne.Window) {
 	deviceCallbacks := malgo.DeviceCallbacks{
 		Data: onSamples,
 	}
-	device, err := malgo.InitDevice(ctx.Context, deviceConfig, deviceCallbacks)
+	device, err = malgo.InitDevice(ctx.Context, deviceConfig, deviceCallbacks)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Println(err)
+		return
 	}
 
 	err = device.Start()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Println(err)
+		return
 	}
 
-	log.Println("Playing a sound")
-	stop := widget.NewButton("Stop", func() {
+	select {
+	case <-time.After(dur):
+		device.Stop()
 		device.Uninit()
-		mainWindowSetContext(fynewindow)
-	})
-	fynewindow.SetContent(container.NewVBox(
-		stop,
-	))
+	}
 }
