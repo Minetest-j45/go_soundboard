@@ -3,6 +3,10 @@
   {
    "name": "wav",
    "file": "./test.wav"
+  },
+  {
+   "name": "t",
+   "file": "./test.wav"
   }
  ]
 }

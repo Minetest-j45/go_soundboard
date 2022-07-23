@@ -4,18 +4,22 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
 func makeJsonToButtons(fynewindow fyne.Window) []fyne.CanvasObject {
 	buttons := openJson()
+
 	var btns []fyne.CanvasObject
+
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.HomeIcon(), func() { //home
 			mainWindowSetContext(fynewindow)
@@ -32,19 +36,32 @@ func makeJsonToButtons(fynewindow fyne.Window) []fyne.CanvasObject {
 		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() { //light mode
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
+		widget.NewToolbarAction(theme.SettingsIcon(), func() { //settings
+			settingsSetContext(fynewindow)
+		}),
 		/*widget.NewToolbarAction(theme.ViewRefreshIcon(), func() { //refresh
 			log.Println("Refresh")
 			mainWindowSetContext(fynewindow)
 		}),*/
 	)
+
+	settings := openSettings()
+	lay := layout.NewGridLayoutWithColumns(settings.Columns)
+	var soundbtns []fyne.CanvasObject
+
 	btns = append(btns, bar)
+
 	for _, btn := range buttons.Buttons {
 		file := btn.File
 		newbtn := widget.NewButton(btn.Name, func() {
 			go playAudio(file, fynewindow)
 		})
-		btns = append(btns, newbtn)
+		soundbtns = append(soundbtns, newbtn)
 	}
+
+	grid := fyne.NewContainerWithLayout(lay, soundbtns...)
+	btns = append(btns, grid)
+
 	return btns
 }
 
@@ -65,6 +82,9 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() { //light mode
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
+		widget.NewToolbarAction(theme.SettingsIcon(), func() { //settings
+			settingsSetContext(fynewindow)
+		}),
 		/*widget.NewToolbarAction(theme.ViewRefreshIcon(), func() { //refresh
 			log.Println("Refresh")
 			mainWindowSetContext(fynewindow)
@@ -80,9 +100,6 @@ func newSoundWindowSetContext(fynewindow fyne.Window) {
 		mainWindowSetContext(fynewindow)
 	})
 	finish := widget.NewButton("Finish", func() {
-		log.Println("Name was:", name.Text)
-		log.Println("File was:", file.Text)
-
 		exists := confExists(name.Text)
 		if exists {
 			log.Println("A button with the name `" + name.Text + "` already exists")
@@ -136,6 +153,9 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() { //light mode
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		}),
+		widget.NewToolbarAction(theme.SettingsIcon(), func() { //settings
+			settingsSetContext(fynewindow)
+		}),
 		/*widget.NewToolbarAction(theme.ViewRefreshIcon(), func() { //refresh
 			log.Println("Refresh")
 			mainWindowSetContext(fynewindow)
@@ -159,6 +179,59 @@ func deleteSoundWindowContext(fynewindow fyne.Window) {
 		name,
 		cancel,
 		delete,
+	))
+}
+
+func settingsSetContext(fynewindow fyne.Window) {
+	bar := widget.NewToolbar(
+		widget.NewToolbarAction(theme.HomeIcon(), func() { //home
+			mainWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentAddIcon(), func() { //add
+			newSoundWindowSetContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() { //remove
+			deleteSoundWindowContext(fynewindow)
+		}),
+		widget.NewToolbarAction(theme.VisibilityIcon(), func() { //dark mode
+			fyne.CurrentApp().Settings().SetTheme(theme.DarkTheme())
+		}),
+		widget.NewToolbarAction(theme.VisibilityOffIcon(), func() { //light mode
+			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
+		}),
+		widget.NewToolbarAction(theme.SettingsIcon(), func() { //settings
+			settingsSetContext(fynewindow)
+		}),
+		/*widget.NewToolbarAction(theme.ViewRefreshIcon(), func() { //refresh
+			log.Println("Refresh")
+			mainWindowSetContext(fynewindow)
+		}),*/
+	)
+
+	cols := widget.NewEntry()
+	cols.SetPlaceHolder("Enter the number of columns you want there to be here")
+
+	cancel := widget.NewButton("Cancel", func() {
+		mainWindowSetContext(fynewindow)
+	})
+
+	finish := widget.NewButton("Finish", func() {
+		col, err := strconv.Atoi(cols.Text)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		writeSettings(Settings{Columns: col})
+
+		mainWindowSetContext(fynewindow)
+	})
+
+	fynewindow.SetContent(container.NewVBox(
+		bar,
+		cols,
+		cancel,
+		finish,
 	))
 }
 

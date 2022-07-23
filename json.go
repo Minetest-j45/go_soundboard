@@ -19,9 +19,9 @@ type Button struct {
 }
 
 func openJson() Buttons {
-	jsonFile, err := os.Open("./soundboard.json")
+	jsonFile, err := os.Open("./sounds.json")
 	if err != nil {
-		os.Create("./soundboard.json")
+		os.Create("./sounds.json")
 		openJson()
 	}
 	defer jsonFile.Close()
@@ -38,10 +38,7 @@ func openJson() Buttons {
 func confNewSound(name string, file string) {
 	buttons := openJson()
 
-	newButton := Button{}
-
-	newButton.Name = name
-	newButton.File = file
+	newButton := Button{Name: name, File: file}
 
 	buttons.Buttons = append(buttons.Buttons, newButton)
 
@@ -50,7 +47,7 @@ func confNewSound(name string, file string) {
 		log.Println(err)
 	}
 
-	ioutil.WriteFile("./soundboard.json", newButtonBytes, 0666)
+	ioutil.WriteFile("./sounds.json", newButtonBytes, 0666)
 }
 
 func confDeleteSound(name string, fynewindow fyne.Window) {
@@ -70,7 +67,7 @@ func confDeleteSound(name string, fynewindow fyne.Window) {
 			}
 
 			out, _ := json.MarshalIndent(buttons, "", "  ")
-			_ = ioutil.WriteFile("./soundboard.json", out, 0666)
+			_ = ioutil.WriteFile("./sounds.json", out, 0666)
 			mainWindowSetContext(fynewindow)
 		}
 	}
@@ -87,4 +84,34 @@ func confExists(name string) bool {
 	}
 
 	return exists
+}
+
+type Settings struct {
+	Columns int `json:"cols"`
+}
+
+func openSettings() Settings {
+	sFile, err := os.Open("./settings.json")
+	if err != nil {
+		os.Create("./settings.json")
+		openSettings()
+	}
+	defer sFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(sFile)
+
+	var settings Settings
+
+	json.Unmarshal(byteValue, &settings)
+
+	return settings
+}
+
+func writeSettings(settings Settings) {
+	newSettings, err := json.MarshalIndent(settings, "", " ")
+	if err != nil {
+		log.Println(err)
+	}
+
+	ioutil.WriteFile("./settings.json", newSettings, 0666)
 }
