@@ -104,6 +104,10 @@ func openSettings() Settings {
 
 	json.Unmarshal(byteValue, &settings)
 
+	if settings.Columns < 1 {
+		settings.Columns = 1
+	}
+
 	return settings
 }
 
