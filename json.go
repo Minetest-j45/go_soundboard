@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
-	"fyne.io/fyne/v2"
 )
 
 type Buttons struct {
@@ -50,7 +48,7 @@ func confNewSound(name string, file string) {
 	ioutil.WriteFile("./sounds.json", newButtonBytes, 0666)
 }
 
-func confDeleteSound(name string, fynewindow fyne.Window) {
+func confDeleteSound(name string) {
 	buttons := openJson()
 
 	for _, v := range buttons.Buttons {
@@ -68,7 +66,7 @@ func confDeleteSound(name string, fynewindow fyne.Window) {
 
 			out, _ := json.MarshalIndent(buttons, "", "  ")
 			_ = ioutil.WriteFile("./sounds.json", out, 0666)
-			mainWin(fynewindow)
+			mainWin()
 		}
 	}
 }

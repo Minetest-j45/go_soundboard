@@ -15,23 +15,25 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func jsonToBtns(fynewindow fyne.Window) []fyne.CanvasObject {
+var fynewindow fyne.Window
+
+func jsonToBtns() []fyne.CanvasObject {
 	buttons := openJson()
 
 	var btns []fyne.CanvasObject
 
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.HomeIcon(), func() {
-			mainWin(fynewindow)
+			mainWin()
 		}),
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			addWin(fynewindow)
+			addWin()
 		}),
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
-			rmWin(fynewindow)
+			rmWin()
 		}),
 		widget.NewToolbarAction(theme.SettingsIcon(), func() {
-			settingsWin(fynewindow)
+			settingsWin()
 		}),
 	)
 
@@ -55,19 +57,19 @@ func jsonToBtns(fynewindow fyne.Window) []fyne.CanvasObject {
 	return btns
 }
 
-func addWin(fynewindow fyne.Window) {
+func addWin() {
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.HomeIcon(), func() {
-			mainWin(fynewindow)
+			mainWin()
 		}),
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			addWin(fynewindow)
+			addWin()
 		}),
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
-			rmWin(fynewindow)
+			rmWin()
 		}),
 		widget.NewToolbarAction(theme.SettingsIcon(), func() {
-			settingsWin(fynewindow)
+			settingsWin()
 		}),
 	)
 
@@ -77,7 +79,7 @@ func addWin(fynewindow fyne.Window) {
 	file.SetPlaceHolder("Enter new sound file here")
 
 	cancel := widget.NewButton("Cancel", func() {
-		mainWin(fynewindow)
+		mainWin()
 	})
 	finish := widget.NewButton("Finish", func() {
 		exists := confExists(name.Text)
@@ -95,13 +97,13 @@ func addWin(fynewindow fyne.Window) {
 
 		switch strings.ToLower(filepath.Ext(file.Text)) {
 		case ".wav":
-			mainWin(fynewindow)
+			mainWin()
 			confNewSound(name.Text, file.Text)
-			mainWin(fynewindow)
+			mainWin()
 		case ".mp3":
-			mainWin(fynewindow)
+			mainWin()
 			confNewSound(name.Text, file.Text)
-			mainWin(fynewindow)
+			mainWin()
 		default:
 			log.Println("Invalid file extension, we only support .wav and .mp3")
 			return
@@ -116,19 +118,19 @@ func addWin(fynewindow fyne.Window) {
 	))
 }
 
-func rmWin(fynewindow fyne.Window) {
+func rmWin() {
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.HomeIcon(), func() {
-			mainWin(fynewindow)
+			mainWin()
 		}),
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			addWin(fynewindow)
+			addWin()
 		}),
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
-			rmWin(fynewindow)
+			rmWin()
 		}),
 		widget.NewToolbarAction(theme.SettingsIcon(), func() {
-			settingsWin(fynewindow)
+			settingsWin()
 		}),
 	)
 
@@ -136,11 +138,11 @@ func rmWin(fynewindow fyne.Window) {
 	name.SetPlaceHolder("Enter the name of the sound you want to delete here")
 
 	cancel := widget.NewButton("Cancel", func() {
-		mainWin(fynewindow)
+		mainWin()
 	})
 
 	delete := widget.NewButton("Delete", func() {
-		confDeleteSound(name.Text, fynewindow)
+		confDeleteSound(name.Text)
 	})
 
 	fynewindow.SetContent(container.NewVBox(
@@ -151,19 +153,19 @@ func rmWin(fynewindow fyne.Window) {
 	))
 }
 
-func settingsWin(fynewindow fyne.Window) {
+func settingsWin() {
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.HomeIcon(), func() {
-			mainWin(fynewindow)
+			mainWin()
 		}),
 		widget.NewToolbarAction(theme.ContentAddIcon(), func() {
-			addWin(fynewindow)
+			addWin()
 		}),
 		widget.NewToolbarAction(theme.ContentRemoveIcon(), func() {
-			rmWin(fynewindow)
+			rmWin()
 		}),
 		widget.NewToolbarAction(theme.SettingsIcon(), func() {
-			settingsWin(fynewindow)
+			settingsWin()
 		}),
 	)
 
@@ -174,7 +176,7 @@ func settingsWin(fynewindow fyne.Window) {
 	themes.SetPlaceHolder("Enter the theme you want to use here (1 = dark, 2 = light)")
 
 	cancel := widget.NewButton("Cancel", func() {
-		mainWin(fynewindow)
+		mainWin()
 	})
 
 	finish := widget.NewButton("Finish", func() {
@@ -201,7 +203,7 @@ func settingsWin(fynewindow fyne.Window) {
 
 		writeSettings(Settings{Columns: col, Theme: themeInt})
 
-		mainWin(fynewindow)
+		mainWin()
 	})
 
 	fynewindow.SetContent(container.NewVBox(
@@ -213,8 +215,8 @@ func settingsWin(fynewindow fyne.Window) {
 	))
 }
 
-func mainWin(fynewindow fyne.Window) {
-	buttons := jsonToBtns(fynewindow)
+func mainWin() {
+	buttons := jsonToBtns()
 	fynewindow.SetContent(container.NewVBox(
 		buttons...,
 	))
@@ -224,10 +226,10 @@ func main() {
 	a := app.NewWithID("com.minetest-j45.go_soundboard")
 	a.SetIcon(gosoundboardlogoPng)
 
-	w := a.NewWindow("Go Soundboard - 0.0")
+	fynewindow = a.NewWindow("Go Soundboard - 0.0")
 
-	mainWin(w)
+	mainWin()
 
-	w.Resize(fyne.NewSize(700, 400))
-	w.ShowAndRun()
+	fynewindow.Resize(fyne.NewSize(700, 400))
+	fynewindow.ShowAndRun()
 }
