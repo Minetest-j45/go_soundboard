@@ -112,9 +112,7 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 		return
 	}
 
-	select {
-	case <-time.After(dur):
-		device.Stop()
-		device.Uninit()
-	}
+	time.Sleep(dur)
+	device.Stop()
+	device.Uninit()
 }

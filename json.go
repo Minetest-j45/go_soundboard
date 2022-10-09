@@ -68,7 +68,7 @@ func confDeleteSound(name string, fynewindow fyne.Window) {
 
 			out, _ := json.MarshalIndent(buttons, "", "  ")
 			_ = ioutil.WriteFile("./sounds.json", out, 0666)
-			mainWindowSetContext(fynewindow)
+			mainWin(fynewindow)
 		}
 	}
 }
@@ -88,6 +88,7 @@ func confExists(name string) bool {
 
 type Settings struct {
 	Columns int `json:"cols"`
+	Theme   int `json:"theme"`
 }
 
 func openSettings() Settings {
