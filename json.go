@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -33,6 +32,19 @@ func openJson() Buttons {
 	return buttons
 }
 
+func rawJson() string {
+	jsonFile, err := os.Open("./sounds.json")
+	if err != nil {
+		os.Create("./sounds.json")
+		rawJson()
+	}
+	defer jsonFile.Close()
+
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	return string(byteValue)
+}
+
 func confNewSound(name string, file string) {
 	buttons := openJson()
 
@@ -42,7 +54,8 @@ func confNewSound(name string, file string) {
 
 	newButtonBytes, err := json.MarshalIndent(buttons, "", " ")
 	if err != nil {
-		log.Println(err)
+		errWin(err)
+		return
 	}
 
 	ioutil.WriteFile("./sounds.json", newButtonBytes, 0666)
@@ -113,7 +126,8 @@ func openSettings() Settings {
 func writeSettings(settings Settings) {
 	newSettings, err := json.MarshalIndent(settings, "", " ")
 	if err != nil {
-		log.Println(err)
+		errWin(err)
+		return
 	}
 
 	ioutil.WriteFile("./settings.json", newSettings, 0666)

@@ -24,10 +24,9 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 
 	file, err := os.Open(audioFile)
 	if err != nil {
-		log.Println(err)
+		errWin(err)
 		return
 	}
-
 	defer file.Close()
 
 	var reader io.Reader
@@ -39,7 +38,7 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 		w := wav.NewReader(file)
 		f, err := w.Format()
 		if err != nil {
-			log.Println(err)
+			errWin(err)
 			return
 		}
 
@@ -49,13 +48,13 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 
 		dur, err = w.Duration()
 		if err != nil {
-			log.Println(err)
+			errWin(err)
 			return
 		}
 	case ".mp3":
 		m, err := mp3.NewDecoder(file)
 		if err != nil {
-			log.Println(err)
+			errWin(err)
 			return
 		}
 
@@ -68,7 +67,7 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 		audioLength := int(samples) / m.SampleRate() // Audio length in seconds.
 		dur = time.Duration(audioLength * int(math.Pow(10, 9)))
 	default:
-		log.Println("Not a valid file.")
+		errWin(errInvalidExt)
 		return
 	}
 
@@ -76,7 +75,7 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 		log.Printf("LOG <%v>\n", message)
 	})
 	if err != nil {
-		log.Println(err)
+		errWin(err)
 		return
 	}
 	defer func() {
@@ -102,17 +101,17 @@ func playAudio(audioFile string, fynewindow fyne.Window) {
 	}
 	device, err = malgo.InitDevice(ctx.Context, deviceConfig, deviceCallbacks)
 	if err != nil {
-		log.Println(err)
+		errWin(err)
 		return
 	}
+	defer device.Stop()
+	defer device.Uninit()
 
 	err = device.Start()
 	if err != nil {
-		log.Println(err)
+		errWin(err)
 		return
 	}
 
 	time.Sleep(dur)
-	device.Stop()
-	device.Uninit()
 }

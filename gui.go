@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"errors"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -14,6 +14,11 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
+
+var errBtnExists = errors.New("a button with that name already exists")
+var errBtnNoExists = errors.New("a button with that name doesnt exist")
+var errInvalidTheme = errors.New("invalid theme value")
+var errInvalidExt = errors.New("invalid file extension, we only support .wav and .mp3")
 
 var fynewindow fyne.Window
 
@@ -82,15 +87,14 @@ func addWin() {
 		mainWin()
 	})
 	finish := widget.NewButton("Finish", func() {
-		exists := confExists(name.Text)
-		if exists {
-			log.Println("A button with the name `" + name.Text + "` already exists")
+		if confExists(name.Text) {
+			errWin(errBtnExists)
 			return
 		}
 
 		testFile, err := os.Open(file.Text)
 		if err != nil {
-			log.Println(err)
+			errWin(err)
 			return
 		}
 		defer testFile.Close()
@@ -105,7 +109,7 @@ func addWin() {
 			confNewSound(name.Text, file.Text)
 			mainWin()
 		default:
-			log.Println("Invalid file extension, we only support .wav and .mp3")
+			errWin(errInvalidExt)
 			return
 		}
 	})
@@ -142,7 +146,11 @@ func rmWin() {
 	})
 
 	delete := widget.NewButton("Delete", func() {
-		confDeleteSound(name.Text)
+		if confExists(name.Text) {
+			confDeleteSound(name.Text)
+		} else {
+			errWin(errBtnNoExists)
+		}
 	})
 
 	fynewindow.SetContent(container.NewVBox(
@@ -197,7 +205,7 @@ func settingsWin() {
 		case 2:
 			fyne.CurrentApp().Settings().SetTheme(theme.LightTheme())
 		default:
-			log.Println("Invalid theme")
+			errWin(errInvalidTheme)
 			return
 		}
 
@@ -206,13 +214,33 @@ func settingsWin() {
 		mainWin()
 	})
 
+	raw := widget.NewLabelWithStyle(rawJson(), fyne.TextAlignLeading, widget.RichTextStyleCodeBlock.TextStyle)
+
 	fynewindow.SetContent(container.NewVBox(
 		bar,
 		cols,
 		themes,
 		cancel,
 		finish,
+		widget.NewSeparator(),
+		raw,
 	))
+}
+
+func errWin(err error) {
+	var popup *widget.PopUp
+	popup = widget.NewPopUp(container.NewVBox(
+		widget.NewSeparator(),
+		widget.NewLabelWithStyle("An error has occured:", fyne.TextAlignCenter, widget.RichTextStyleHeading.TextStyle),
+		widget.NewSeparator(),
+		widget.NewLabel(err.Error()),
+		widget.NewButton("X", func() {
+			mainWin()
+			popup.Hide()
+		}),
+	), fynewindow.Canvas())
+
+	popup.Show()
 }
 
 func mainWin() {
